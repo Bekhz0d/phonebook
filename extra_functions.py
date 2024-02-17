@@ -85,17 +85,17 @@ def read_from(file_name: str):
         f.readline()
         f.readline()
         for line in f:
-            yield line.strip()
+            yield line
 
 
-def write_(file_name: str, new_contact_sequence_number: int, lines) -> int:
+def write_(file_name: str, new_contact_sequence_number: int, generator) -> int:
     """
     This function writes the file from the rest.
 
     Args:
         file_name (str): The name of the file.
         new_contact_sequence_number (int): The sequence number of the new contact to be written.
-        lines (generator): A generator that yields the lines of the file.
+        generator (generator): A generator that yields the lines of the file.
 
     Returns:
         int: Number of rows copied.
@@ -105,23 +105,23 @@ def write_(file_name: str, new_contact_sequence_number: int, lines) -> int:
     with open(file_name, 'a') as f:
         print()
         print()
-        for line in lines:
+        for line in generator:
             contact_fields = line.split(' | ')[1:]
             contact_data = " | ".join(contact_fields)
-            f.write(f"{new_contact_sequence_number} | " + contact_data + "\n")
-            print(f"COPIED  {contact_data}")
+            f.write(f"{new_contact_sequence_number} | " + contact_data)
+            print(f"COPIED  {contact_data.strip()}")
             copied_contacts_number += 1
             new_contact_sequence_number += 1
     return copied_contacts_number
 
 
-def append_to(file_name: str, lines) -> int:
+def append_to(file_name: str, generator) -> int:
     """
     This function appends lines to a file.
 
     Args:
         file_name (str): The name of the file.
-        lines (generator): A generator that yields the lines to be appended.
+        generator (generator): A generator that yields the lines to be appended.
 
     Returns:
         int: Number of rows copied.
@@ -132,7 +132,7 @@ def append_to(file_name: str, lines) -> int:
 
     if new_contact_sequence_number == 1:
 
-        copied_contacts_number = write_(file_name, new_contact_sequence_number, lines)
+        copied_contacts_number = write_(file_name, new_contact_sequence_number, generator)
         return copied_contacts_number
 
     # if the file does not have a table base
@@ -141,8 +141,8 @@ def append_to(file_name: str, lines) -> int:
             f.write("N | First name | Last name | Patronymic | Organization | Work phone | Personal phone\n"
                     "------------------------------------------------------------------------------------\n")
         new_contact_sequence_number = 1
-        copied_contacts_number = write_(file_name, new_contact_sequence_number, lines)
+        copied_contacts_number = write_(file_name, new_contact_sequence_number, generator)
         return copied_contacts_number
 
-    copied_contacts_number = write_(file_name, new_contact_sequence_number, lines)
+    copied_contacts_number = write_(file_name, new_contact_sequence_number, generator)
     return copied_contacts_number

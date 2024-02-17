@@ -71,21 +71,21 @@ def edit_contact(file_name: str, line_number: int, edited_contact: str) -> None:
     Returns:
         None: This function does not return any values.
     """
+
     edited_contact_fields = [contact_field.strip() for contact_field in edited_contact.split(',')]
-
-    # Open the file in read mode
-    with open(file_name, 'r') as file:
-        lines = file.readlines()
-        # Modify the content of the specified line
-        lines[line_number + 2 - 1] = f"{line_number} | " + " | ".join(edited_contact_fields) + "\n"
-
-    # Open the file in write mode to update its content
-    with open(file_name, 'w') as file:
-        file.writelines(lines)
+    generator = read_from(file_name)
+    modified_data = [data for data in generator]
+    cleared_file = create_file(file_name.split('.')[0])
+    with open(cleared_file, 'a') as file:
+        i = 1
+        for line in modified_data:
+            if i == line_number:
+                line = f"{line_number} | " + " | ".join(edited_contact_fields) + "\n"
+            file.write(line)
+            i += 1
 
 
 # Function for deleting a contact
-
 def delete_contact(file_name: str, line_number: int) -> str:
     """
     This function deletes a contact from a file.
@@ -97,25 +97,24 @@ def delete_contact(file_name: str, line_number: int) -> str:
     Returns:
         str: The information of the deleted contact.
 
-    """    # Open the file in read mode
-    with open(file_name, 'r') as file:
-        lines = file.readlines()
-
-    # Open the file in write mode to update its content
-    with open(file_name, 'w') as file:
-        for index, line in enumerate(lines):
-            # print(f"index = {index - 1}, line = {line}")
-            if index - 1 < line_number:
-                file.writelines(line)
-            elif index - 1 == line_number:
-                deleted_line = line
-                continue
+    """
+    generator = read_from(file_name)
+    modified_data = [data for data in generator]
+    cleared_file = create_file(file_name.split('.')[0])
+    with open(cleared_file, 'a') as file:
+        line_to_be_written = 1
+        for line in modified_data:
+            if line_to_be_written < line_number:
+                file.write(line)
+            elif line_to_be_written == line_number:
+                deleted_contact = line
             else:
-                line_fields = line.strip().split(' | ')[1:]
-                contact_with_a_new_order_number = f"{index - 2} | " + " | ".join(line_fields) + "\n"
+                line_fields = line.split(' | ')[1:]
+                contact_with_a_new_order_number = f"{line_to_be_written - 1} | " + " | ".join(line_fields)
                 file.write(contact_with_a_new_order_number)
+            line_to_be_written += 1
 
-    return deleted_line
+    return deleted_contact
 
 
 # Function for searching contacts by characteristics
@@ -154,8 +153,8 @@ def sharing(from_file: str, to_file: str) -> int:
         int: The number of copied contacts.
 
     """
-    information_to_be_shared = read_from(from_file)
-    copied_contacts_number = append_to(to_file, information_to_be_shared)
+    generator_of_information_to_be_shared = read_from(from_file)
+    copied_contacts_number = append_to(to_file, generator_of_information_to_be_shared)
 
     return copied_contacts_number
 

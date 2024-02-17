@@ -3,18 +3,24 @@ from main_functions import read_contacts, add_contact, edit_contact, delete_cont
 from extra_functions import get_and_validate_input, determine_new_contact_id
 import os
 
+
+# def read_data(filename):
+#     with open(filename, 'r') as file:
+#         for row in file:
+#             yield row.strip()
+#
+#
 # # Create data for testing
-# with open('RandomData 200.csv', 'r') as f:
-#     data = f.readlines()
+# generator = read_data('RandomData 200.csv')
+# modified_data = [data for data in generator]
 #
 # with open('my_contacts.txt', 'w') as f:
 #     f.write("N | First name | Last name | Patronymic | Organization | Work phone | Personal phone\n"
 #             "------------------------------------------------------------------------------------\n")
-#     for line in data:
+#     for line in modified_data:
 #         clean_line = line.split(',')
 #         clean_line_fields = [line.strip('"') for line in clean_line]
-#         f.write(" | ".join(clean_line_fields))
-#     f.write("\n")
+#         f.write(" | ".join(clean_line_fields) + "\n")
 
 
 # Main function
@@ -86,7 +92,7 @@ def main():
             """
             while True:
                 contact_id = input("Enter the sequence number of the contact you want to edit ('q' ->  Quit)"
-                                   ">>> ").strip()
+                                   "\n>>> ").strip()
                 if contact_id == 'q':
                     break
                 try:
@@ -94,6 +100,7 @@ def main():
                 except ValueError:
                     print("\nInvalid sequence number")
                     print("\nPlease, ", end='')
+                    continue
                 if 0 < contact_id < sequence_number_of_the_new_contact:
                     while True:
                         edited_contact = get_and_validate_input()
@@ -111,7 +118,7 @@ def main():
             Prompts the user to enter a keyword and searches for matching contacts in the file.
             """
             key_word = input("\nEnter a keyword for the desired contact or contacts ('q' ->  Quit)"
-                             ">>> ").strip().lower()
+                             "\n>>> ").strip().lower()
             if key_word != 'q':
                 found_contacts = search_contacts(file_name, key_word)
 
@@ -134,7 +141,7 @@ def main():
             """
             while True:
                 contact_id = input("Enter the sequence number of the contact you want to delete ('q' ->  Quit)"
-                                   ">>> ").strip()
+                                   "\n>>> ").strip()
                 if contact_id == 'q':
                     break
 
@@ -247,7 +254,7 @@ def main():
             """ Create new file """
             while True:
                 new_file_name = input("Enter the name of the new file ('q' ->  Quit)"
-                                      ">>> ").strip()
+                                      "\n>>> ").strip()
                 if new_file_name == 'q':
                     break
                 elif not new_file_name:
