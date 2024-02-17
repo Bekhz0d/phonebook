@@ -1,35 +1,37 @@
 # Determine the order number for a new contact
 def determine_new_contact_id(file_name: str) -> int:
     """
-    Determines the order number for the new contact to be written to the file.
-    Counts lines in file, subtracts 2 (file base is 2 lines), adds 1 because indexing starts at 0
+    This function determines the next available contact ID by reading the contents of the specified file
+    and incrementing the largest existing ID by 1.
 
-    Parameters:
-        file_name: The name of the file
+    Args:
+        file_name (str): The name of the file containing the contact data.
 
     Returns:
-        int: The order number of the new contact
+        int: The next available contact ID.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+
     """
     new_contact_id = 0
     with open(file_name, 'r') as file:
         for _ in file:
             new_contact_id += 1
-    """ The reason for subtract of 2 is that the first 2 lines of our file form the basis of the table and 
-    since indexing starts at 0, we add 1 -> '- 2 + 1 = - 1' """
     return new_contact_id - 1
 
 
 # Checking the validity of the contact entered by the user
-def is_valid_contact_format(input_string):
+def is_valid_contact_format(input_string: str) -> bool:
     """
-    Checks if information is entered for each field of the contact in the format
-    "First Name, Last Name, Patronymic, Organization, Work Phone, Personal Phone"
+    This function checks if the input string is in the correct format for a contact.
 
-    Parameters:
-        input_string (string): user input
+    Args:
+        input_string (str): The input string to be checked.
 
     Returns:
-        boolean: whether the data entered by the user is correct or in an incorrect format
+        bool: True if the input string is in the correct format, False otherwise.
+
     """
     # Split the input string by comma and strip whitespace from each contact_field
     contact_fields = [contact_field.strip() for contact_field in input_string.split(',')]
@@ -44,12 +46,13 @@ def is_valid_contact_format(input_string):
 
 
 # Function to get user input and validate it
-def get_and_validate_input():
+def get_and_validate_input() -> str | None:
     """
-    Function to get user input and validate it
+    This function prompts the user to enter a new contact and validates the input.
 
     Returns:
-        string: user input
+        str: The user input, or 'q' to quit.
+
     """
 
     user_input = input("\nEnter a new contact in the format "
@@ -66,15 +69,16 @@ def get_and_validate_input():
         return None
 
 
-def read_from(file_name):
+def read_from(file_name: str):
     """
-    Function to read from a file
+    This function reads from a file and yields the lines of the file.
 
-    Parameters:
-        file_name (string): The name of the file
+    Args:
+        file_name (str): The name of the file.
 
-    Returns:
-        generator: A generator that yields the lines of the file
+    Yields:
+        str: A line from the file.
+
     """
 
     with open(file_name, 'r') as f:
@@ -84,55 +88,20 @@ def read_from(file_name):
             yield line.strip()
 
 
-def append_to(file_name, lines):
+def write_(file_name: str, new_contact_sequence_number: int, lines) -> int:
     """
-    Function to write the file from the rest
+    This function writes the file from the rest.
 
-    Parameters:
-        file_name (string): The name of the file
-        lines (generator): A generator that yields the lines of the file
+    Args:
+        file_name (str): The name of the file.
+        new_contact_sequence_number (int): The sequence number of the new contact to be written.
+        lines (generator): A generator that yields the lines of the file.
 
     Returns:
+        int: Number of rows copied.
 
     """
-
-    new_contact_sequence_number = determine_new_contact_id(file_name)
-
-    if new_contact_sequence_number == 1:
-
-        transferred_contacts_number = 0
-        with open(file_name, 'a') as f:
-            print()
-            print()
-            for line in lines:
-                contact_fields = line.split(' | ')[1:]
-                contact_data = " | ".join(contact_fields)
-                f.write(f"{new_contact_sequence_number} | " + contact_data + "\n")
-                print(f"TRANSFERRED  {contact_data}")
-                transferred_contacts_number += 1
-                new_contact_sequence_number += 1
-        return transferred_contacts_number
-
-    elif new_contact_sequence_number < 1:  # 0 or -1
-        with open(file_name, 'w') as f:
-            f.write("N | First name | Last name | Patronymic | Organization | Work phone | Personal phone\n"
-                    "------------------------------------------------------------------------------------\n")
-        new_contact_sequence_number = 1
-
-        transferred_contacts_number = 0
-        with open(file_name, 'a') as f:
-            print()
-            print()
-            for line in lines:
-                contact_fields = line.split(' | ')[1:]
-                contact_data = " | ".join(contact_fields)
-                f.write(f"{new_contact_sequence_number} | " + contact_data + "\n")
-                print(f"TRANSFERRED  {contact_data}")
-                transferred_contacts_number += 1
-                new_contact_sequence_number += 1
-        return transferred_contacts_number
-
-    transferred_contacts_number = 0
+    copied_contacts_number = 0
     with open(file_name, 'a') as f:
         print()
         print()
@@ -140,7 +109,40 @@ def append_to(file_name, lines):
             contact_fields = line.split(' | ')[1:]
             contact_data = " | ".join(contact_fields)
             f.write(f"{new_contact_sequence_number} | " + contact_data + "\n")
-            print(f"TRANSFERRED  {contact_data}")
-            transferred_contacts_number += 1
+            print(f"COPIED  {contact_data}")
+            copied_contacts_number += 1
             new_contact_sequence_number += 1
-    return transferred_contacts_number
+    return copied_contacts_number
+
+
+def append_to(file_name: str, lines) -> int:
+    """
+    This function appends lines to a file.
+
+    Args:
+        file_name (str): The name of the file.
+        lines (generator): A generator that yields the lines to be appended.
+
+    Returns:
+        int: Number of rows copied.
+
+    """
+
+    new_contact_sequence_number = determine_new_contact_id(file_name)
+
+    if new_contact_sequence_number == 1:
+
+        copied_contacts_number = write_(file_name, new_contact_sequence_number, lines)
+        return copied_contacts_number
+
+    # if the file does not have a table base
+    elif new_contact_sequence_number < 1:  # 0 or -1
+        with open(file_name, 'w') as f:
+            f.write("N | First name | Last name | Patronymic | Organization | Work phone | Personal phone\n"
+                    "------------------------------------------------------------------------------------\n")
+        new_contact_sequence_number = 1
+        copied_contacts_number = write_(file_name, new_contact_sequence_number, lines)
+        return copied_contacts_number
+
+    copied_contacts_number = write_(file_name, new_contact_sequence_number, lines)
+    return copied_contacts_number

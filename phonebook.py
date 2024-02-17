@@ -14,18 +14,27 @@ import os
 #         clean_line = line.split(',')
 #         clean_line_fields = [line.strip('"') for line in clean_line]
 #         f.write(" | ".join(clean_line_fields))
+#     f.write("\n")
 
 
 # Main function
 def main():
-    """  """
+    """
+    Main function that controls the program's flow.
+    """
     file_name = 'my_contacts.txt'
     if not os.path.exists(file_name):
+        """
+        Creates a new file with the specified name if it does not exist.
+        """
         create_file(file_name.split('.')[0])
 
     sequence_number_of_the_new_contact = determine_new_contact_id(file_name)
 
     if sequence_number_of_the_new_contact < 1:
+        """
+        Creates a new file with the specified name if it does not exist.
+        """
         with open(file_name, 'w') as file:
             file.write("N | First name | Last name | Patronymic | Organization | Work phone | Personal phone\n"
                        "------------------------------------------------------------------------------------\n")
@@ -48,7 +57,9 @@ def main():
         choice = input("\nChoose an action: ").strip()
 
         if choice == '1':
-            """ Read contacts """
+            """
+            Reads the contents of the specified file and displays the contacts.
+            """
             read_contacts(file_name)
             if sequence_number_of_the_new_contact == 1:
                 print("\nThere are no contacts in the file.\n")
@@ -56,7 +67,9 @@ def main():
             print(f"Number of contacts: {sequence_number_of_the_new_contact - 1}")
 
         elif choice == '2':
-            """ Add contact """
+            """
+            Prompts the user to enter a new contact and adds it to the file.
+            """
             while True:
                 new_contact = get_and_validate_input()
                 if new_contact:
@@ -68,7 +81,9 @@ def main():
                 print(f"\n{added_contact} \nADDED SUCCESSFULLY")
 
         elif choice == '3':
-            """ Edit contact """
+            """
+            Prompts the user to edit an existing contact and updates the file.
+            """
             while True:
                 contact_id = input("Enter the sequence number of the contact you want to edit ('q' ->  Quit)"
                                    ">>> ").strip()
@@ -92,7 +107,9 @@ def main():
                           " Sequence number is out of range. \nTry again...  ('q' ->  Quit)")
 
         elif choice == '4':
-            """ Search contacts """
+            """
+            Prompts the user to enter a keyword and searches for matching contacts in the file.
+            """
             key_word = input("\nEnter a keyword for the desired contact or contacts ('q' ->  Quit)"
                              ">>> ").strip().lower()
             if key_word != 'q':
@@ -112,7 +129,9 @@ def main():
                     print("\nContacts not found.")
 
         elif choice == '55':
-            """ Delete contact """
+            """
+            Prompts the user to enter the sequence number of a contact and deletes it from the file.
+            """
             while True:
                 contact_id = input("Enter the sequence number of the contact you want to delete ('q' ->  Quit)"
                                    ">>> ").strip()
@@ -136,7 +155,9 @@ def main():
                           " Sequence number is out of range. \nTry again... ('q' ->  Quit)")
 
         elif choice == '6':
-            """ Import contacts """
+            """
+            Prompts the user to enter the path of a file to import and adds the contacts to the file.
+            """
             while True:
                 file_address = input("Enter the path to the file to be imported in the format"
                                      "'/path/to/your/file/your_file_name.txt' ('q' ->  Quit)"
@@ -147,15 +168,17 @@ def main():
                     print("Please ", end="")
                     continue
                 elif os.path.exists(file_address):
-                    transferred_contacts_number = sharing(from_file=file_address, to_file=file_name)
-                    print(f"\n{transferred_contacts_number} contacts have been transferred successfully")
-                    sequence_number_of_the_new_contact += transferred_contacts_number
+                    copied_contacts_number = sharing(from_file=file_address, to_file=file_name)
+                    print(f"\n{copied_contacts_number} contacts have been COPIED SUCCESSFULLY")
+                    sequence_number_of_the_new_contact += copied_contacts_number
                     break
                 else:
                     print("\nThe file not found.")
 
         elif choice == '7':
-            """ Export contacts """
+            """
+            Prompts the user to enter the path of a file to export and copies the contacts to the file.
+            """
             while True:
                 file_address = input("To export, enter the path of the file to be exported in the format"
                                      "'/path/to/your/file/your_file_name.txt' ('q' ->  Quit)"
@@ -166,14 +189,16 @@ def main():
                     print("Please, ", end="")
                     continue
                 elif os.path.exists(file_address):
-                    transferred_contacts_number = sharing(from_file=file_name, to_file=file_address)
-                    print(f"\n{transferred_contacts_number} contacts have been TRANSFERRED SUCCESSFULLY")
+                    copied_contacts_number = sharing(from_file=file_name, to_file=file_address)
+                    print(f"\n{copied_contacts_number} contacts have been COPIED SUCCESSFULLY")
                     break
                 else:
                     print("\nThe file not found.")
 
         elif choice == '8':
-            """ Clearing the file """
+            """
+            Prompts the user to confirm clearing the file and deletes all the contents.
+            """
             while True:
                 confirm = input("\nAre you sure you want to clear the file?"
                                 "\n  'yes' -> Yes\n  'no'  -> No\n  'q'   ->  Quit"
@@ -187,7 +212,9 @@ def main():
                     break
 
         elif choice == '9':
-            """ Switch to another file """
+            """
+            Lists the available files and prompts the user to select a new file.
+            """
             files = os.listdir()
             txt_files = []
             for file in files:
